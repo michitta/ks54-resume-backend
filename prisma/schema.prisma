@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  uuid     String  @id @default(uuid())
+  email    String  @unique
+  fullName String  @unique
+  password String
+  admin    Boolean @default(false)
+}
+
+model Works {
+  uuid             String
+  name             String   @unique
+  startTime        DateTime
+  workByProfession Boolean
+  functions        String[]
+  student          Students @relation(fields: [uuid], references: [uuid])
+}
+
+model Practics {
+  uuid                 String
+  name                 String   @unique
+  startTime            DateTime
+  precticeByProfession Boolean
+  student              Students @relation(fields: [uuid], references: [uuid])
+}
+
+enum driverLicences {
+  A
+  B
+  BE
+  C
+  CE
+  D
+  DE
+  M
+  TM
+  TB
+}
+
+enum educationForms {
+  fullTime
+  partTime
+  selfStudy
+}
+
+model Students {
+  uuid               String          @id @default(uuid())
+  fullName           String
+  profession         String
+  birthday           String
+  group              String
+  phone              String
+  email              String
+  telegram           String?
+  driverLicence      driverLicences?
+  educationForm      educationForms
+  city               String
+  endYear            String
+  professionalSkills String[]
+  socialSkills       String[]
+  additionalSkills   String[]
+  additionalInfo     String
+  workExperience     String?
+  educations         String[]
+  courses            String[]
+  awards             String[]
+
+  Works    Works[]
+  Practics Practics[]
+}
