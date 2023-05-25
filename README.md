@@ -1,1 +1,1 @@
-![image](https://github.com/FluffyCuteOwO/ks54-resume-backend/assets/17436886/aa4958dc-1feb-4b41-8ad6-81c249ae6520)
+![image](https://github.com/FluffyCuteOwO/ks54-resume-backend/assets/17436886/0a4c95dc-f7eb-4f03-9e1d-8bf8f83ab199)
