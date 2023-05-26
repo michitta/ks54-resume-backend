@@ -32,43 +32,24 @@ model Practics {
   student              Students @relation(fields: [uuid], references: [uuid])
 }
 
-enum driverLicences {
-  A
-  B
-  BE
-  C
-  CE
-  D
-  DE
-  M
-  TM
-  TB
-}
-
-enum educationForms {
-  fullTime
-  partTime
-  selfStudy
-}
-
 model Students {
-  uuid               String          @id @default(uuid())
+  uuid               String   @id @default(uuid())
   fullName           String
   profession         String
   birthday           String
   group              String
   phone              String
   email              String
-  telegram           String?
-  driverLicence      driverLicences?
-  educationForm      educationForms
+  telegram           String
+  driverLicence      String
+  educationForm      String
   city               String
   endYear            String
   professionalSkills String[]
   socialSkills       String[]
   additionalSkills   String[]
   additionalInfo     String
-  workExperience     String?
+  workExperience     String
   educations         String[]
   courses            String[]
   awards             String[]

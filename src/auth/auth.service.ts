@@ -7,6 +7,7 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "nestjs-prisma";
 import { MailerService } from "@nest-modules/mailer";
 import * as argon2 from "argon2";
+import { login, recovery, register } from "./dto/user.dto";
 
 @Injectable()
 export class AuthService {
@@ -16,14 +17,15 @@ export class AuthService {
     private readonly mailerService: MailerService
   ) {}
 
-  async login(email: string, password: string) {
+  async login(data: login) {
+    if (!data) throw new BadRequestException();
     const user = await this.prisma.users.findFirst({
       where: {
-        email,
+        email: data.email,
       },
     });
     if (!user) throw new BadRequestException("Неверный логин или пароль");
-    if (user && (await argon2.verify(user.password, password))) {
+    if (user && (await argon2.verify(user.password, data.password))) {
       const payload = {
         uuid: user.uuid,
         email: user.email,
@@ -38,24 +40,23 @@ export class AuthService {
     }
   }
 
-  async register(fullName: string, email: string, password: string) {
+  async register(data: register) {
+    if (!data) throw new BadRequestException();
     const userExists = await this.prisma.users.findFirst({
       where: {
-        email,
-        OR: [
-          {
-            fullName: fullName,
-          },
-        ],
+        email: data.email,
+        OR: {
+          fullName: data.fullName,
+        },
       },
     });
     if (userExists)
       throw new BadRequestException("Такой пользователь уже существует");
     const user = await this.prisma.users.create({
       data: {
-        fullName,
-        email,
-        password: await argon2.hash(password),
+        fullName: data.fullName,
+        email: data.email,
+        password: await argon2.hash(data.password),
       },
     });
     const payload = {
@@ -79,16 +80,17 @@ export class AuthService {
     };
   }
 
-  public async recovery(email: string, password: string) {
+  public async recovery(data: recovery) {
+    if (!data) throw new BadRequestException();
     const user = await this.prisma.users.findFirst({
-      where: { email },
+      where: { email: data.email },
     });
     if (user) {
       const tokenToRecovery = `http://localhost:3003/api/v1/auth/recoveryConfirm?token=${this.jwtService.sign(
         {
           sub: {
             uuid: user.uuid,
-            password: await argon2.hash(password),
+            password: await argon2.hash(data.password),
           },
           type: "recovery",
         },
@@ -96,7 +98,7 @@ export class AuthService {
       )}`;
       await this.mailerService
         .sendMail({
-          to: email,
+          to: data.email,
           subject: "😊 Восстановление доступа к редактору резюме!",
           template: __dirname + "/../../templates/recovery",
           context: {
@@ -115,14 +117,15 @@ export class AuthService {
     }
   }
 
-  public async recoveryConfirm(token: string) {
+  public async recoveryConfirm(data: string) {
+    if (!data) throw new BadRequestException();
     const user = await this.prisma.users.findUnique({
-      where: { uuid: this.jwtService.verify(token).sub.uuid },
+      where: { uuid: this.jwtService.verify(data).sub.uuid },
     });
-    if (user && this.jwtService.verify(token).type === "recovery") {
+    if (user && this.jwtService.verify(data).type === "recovery") {
       await this.prisma.users.update({
         where: { uuid: user.uuid },
-        data: { password: this.jwtService.verify(token).sub.password },
+        data: { password: this.jwtService.verify(data).sub.password },
       });
       return {
         message: "Восстановление пароля прошло успешно",
@@ -132,10 +135,11 @@ export class AuthService {
     throw new BadRequestException("Произошла ошибка");
   }
 
-  async getMe(uuid: string) {
+  async getMe(data: string) {
+    if (!data) throw new NotFoundException();
     const db = await this.prisma.users.findFirst({
       where: {
-        uuid,
+        uuid: data,
       },
     });
     if (!db) throw new NotFoundException("Invalid credentials");

@@ -1,14 +1,34 @@
-import { IsEmail, IsString } from "class-validator";
+import { IsEmail, IsString, IsStrongPassword, IsUUID } from "class-validator";
 
-export class userDto {
+export class login {
   @IsEmail()
   email: string;
 
-  @IsString()
+  @IsStrongPassword({
+    minLength: 6,
+  })
   password: string;
 }
 
-export class userRegisterDto extends userDto {
+export class register {
   @IsString()
   fullName: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsStrongPassword({
+    minLength: 6,
+  })
+  password: string;
+}
+
+export class recovery {
+  @IsEmail()
+  email: string;
+
+  @IsStrongPassword({
+    minLength: 6,
+  })
+  password: string;
 }

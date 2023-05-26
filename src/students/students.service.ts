@@ -20,6 +20,10 @@ export class StudentsService {
       where: {
         uuid: uuid,
       },
+      include: {
+        Works: true,
+        Practics: true,
+      },
     });
   }
 

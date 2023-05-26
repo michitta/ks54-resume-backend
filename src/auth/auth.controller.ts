@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -12,48 +11,42 @@ import {
 } from "@nestjs/common";
 import { Response } from "express";
 import { AuthService } from "./auth.service";
-import { userDto, userRegisterDto } from "./dto/user.dto";
 import { AuthGuard } from "@nestjs/passport";
+import { login, recovery, register } from "./dto/user.dto";
 
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("login")
-  async login(@Body() body: userDto, @Res() res: Response) {
-    const answer = await this.authService.login(body.email, body.password);
+  async login(@Body() data: login, @Res() res: Response) {
+    const answer = await this.authService.login(data);
     res.cookie("token", answer.token);
     res.cookie("uuid", answer.uuid);
-    return res.status(200).end();
+    return res.status(200).send();
   }
 
   @Post("register")
-  async register(@Body() body: userRegisterDto, @Res() res: Response) {
-    const answer = await this.authService.register(
-      body.fullName,
-      body.email,
-      body.password
-    );
+  async register(@Body() data: register, @Res() res: Response) {
+    const answer = await this.authService.register(data);
     res.cookie("token", answer.token);
-    return res.status(201).end();
+    return answer;
   }
 
-  @Post("/recovery")
-  async recovery(@Body() body: any) {
-    if (!body) throw new BadRequestException("Wrong data");
-    return await this.authService.recovery(body.email, body.password);
+  @Post("recovery")
+  async recovery(@Body() data: recovery) {
+    return await this.authService.recovery(data);
   }
 
-  @Get("/recoveryConfirm")
+  @Get("recoveryConfirm")
   @Redirect("http://localhost:3000/auth/login", 301)
-  async recoveryConfirm(@Query("token") token: string) {
-    if (!token) throw new BadRequestException("Wrong data");
-    return await this.authService.recoveryConfirm(token);
+  async recoveryConfirm(@Query("token") data: string) {
+    return await this.authService.recoveryConfirm(data);
   }
 
-  @Get("/@me")
+  @Get("@me")
   @UseGuards(AuthGuard("jwt"))
-  async getUser(@Req() req: any) {
-    return this.authService.getMe(req.user.uuid);
+  async getMe(@Req() data: any) {
+    return this.authService.getMe(data.user.uuid);
   }
 }
