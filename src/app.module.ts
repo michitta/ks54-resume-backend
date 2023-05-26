@@ -3,13 +3,13 @@ require("dotenv").config();
 import { Module } from "@nestjs/common";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaModule } from "nestjs-prisma";
-import { StudentsModule } from "./students/students.module";
+import { UsersModule } from "./users/users.module";
 import { HandlebarsAdapter, MailerModule } from "@nest-modules/mailer";
 
 @Module({
   imports: [
     AuthModule,
-    StudentsModule,
+    UsersModule,
     PrismaModule.forRoot({
       isGlobal: true,
     }),

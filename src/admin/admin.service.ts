@@ -2,11 +2,11 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 
 @Injectable()
-export class StudentsService {
+export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
   async searchStudent(fullName: string) {
-    return this.prisma.students.findMany({
+    return this.prisma.Admin.findMany({
       where: {
         fullName: {
           contains: fullName,
@@ -16,7 +16,7 @@ export class StudentsService {
   }
 
   async getStudent(uuid: string) {
-    return this.prisma.students.findFirst({
+    return this.prisma.Admin.findFirst({
       where: {
         uuid: uuid,
       },
@@ -28,7 +28,7 @@ export class StudentsService {
   }
 
   async setStudent(uuid: string, data: any) {
-    const student = await this.prisma.students.findFirst({
+    const student = await this.prisma.Admin.findFirst({
       where: {
         uuid: uuid,
       },
@@ -36,7 +36,7 @@ export class StudentsService {
 
     if (!student) throw new BadRequestException("This student does not exist");
 
-    await this.prisma.students.update({
+    await this.prisma.Admin.update({
       where: {
         uuid: uuid,
       },
