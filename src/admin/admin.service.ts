@@ -1,9 +1,13 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
+import { InjectS3, S3 } from "nestjs-s3";
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectS3() private readonly s3: S3
+  ) {}
 
   async searchStudent(fullName: string, adminUuid: string) {
     const checkPermissions = await this.prisma.users.findFirst({
@@ -80,6 +84,34 @@ export class AdminService {
 
     return {
       message: "Резюме удалено",
+    };
+  }
+
+  async setIcon(adminUuid: string, uuid: string, file: Express.Multer.File) {
+    const checkPermissions = await this.prisma.users.findUnique({
+      where: { uuid: adminUuid },
+    });
+    if (!checkPermissions.admin)
+      throw new BadRequestException("You are not admin");
+    if (file.mimetype != "image/png")
+      throw new BadRequestException("Неверный формат файла. Загрузите .png");
+    Promise.all([
+      this.s3.putObject({
+        Bucket: "hackaton",
+        Key: `${uuid}.png`,
+        ACL: "public-read",
+        Body: file.buffer,
+      }),
+      this.prisma.users.update({
+        where: { uuid },
+        data: {
+          lastModified: new Date(),
+        },
+      }),
+    ]);
+
+    return {
+      message: "Иконка обновлена",
     };
   }
 }

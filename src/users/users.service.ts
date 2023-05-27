@@ -69,7 +69,6 @@ export class UsersService {
   }
 
   async setIcon(uuid: string, file: Express.Multer.File) {
-    console.log(file.mimetype);
     if (file.mimetype != "image/png")
       throw new BadRequestException("Неверный формат файла. Загрузите .png");
     Promise.all([

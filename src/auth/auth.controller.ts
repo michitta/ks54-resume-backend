@@ -34,13 +34,13 @@ export class AuthController {
 
   @Post("recovery")
   async recovery(@Body() data: recovery) {
-    return await this.authService.recovery(data);
+    return this.authService.recovery(data);
   }
 
   @Get("recoveryConfirm")
   @Redirect("https://owocon.eu.org/auth/login", 301)
   async recoveryConfirm(@Query("token") data: string) {
-    return await this.authService.recoveryConfirm(data);
+    return this.authService.recoveryConfirm(data);
   }
 
   @Post("logout")
