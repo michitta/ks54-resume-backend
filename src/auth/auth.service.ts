@@ -44,10 +44,14 @@ export class AuthService {
     if (!data) throw new BadRequestException();
     const userExists = await this.prisma.users.findFirst({
       where: {
-        email: data.email,
-        OR: {
-          fullName: data.fullName,
-        },
+        OR: [
+          {
+            email: data.email,
+          },
+          {
+            fullName: data.fullName,
+          },
+        ],
       },
     });
     if (userExists)
@@ -86,7 +90,7 @@ export class AuthService {
       where: { email: data.email },
     });
     if (user) {
-      const tokenToRecovery = `http://localhost:3003/api/v1/auth/recoveryConfirm?token=${this.jwtService.sign(
+      const tokenToRecovery = `https://owocon.eu.org/api/v1/auth/recoveryConfirm?token=${this.jwtService.sign(
         {
           sub: {
             uuid: user.uuid,
@@ -143,11 +147,6 @@ export class AuthService {
       },
     });
     if (!db) throw new NotFoundException("Invalid credentials");
-    return {
-      uuid: db.uuid,
-      email: db.email,
-      fullName: db.fullName,
-      admin: db.admin,
-    };
+    return db;
   }
 }

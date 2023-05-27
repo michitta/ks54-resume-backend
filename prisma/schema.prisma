@@ -8,52 +8,44 @@ datasource db {
 }
 
 model Users {
-  uuid     String  @id @default(uuid())
-  email    String  @unique
-  fullName String  @unique
-  password String
-  admin    Boolean @default(false)
-}
-
-model Works {
-  uuid             String
-  name             String   @unique
-  startTime        DateTime
-  workByProfession Boolean
-  functions        String[]
-  student          Students @relation(fields: [uuid], references: [uuid])
-}
-
-model Practics {
-  uuid                 String
-  name                 String   @unique
-  startTime            DateTime
-  precticeByProfession Boolean
-  student              Students @relation(fields: [uuid], references: [uuid])
+  uuid         String   @id @default(uuid())
+  email        String   @unique
+  fullName     String   @unique
+  password     String
+  admin        Boolean  @default(false)
+  lastModified DateTime @default(now())
 }
 
 model Students {
-  uuid               String   @id @default(uuid())
-  fullName           String
-  profession         String
-  birthday           String
-  group              String
-  phone              String
-  email              String
-  telegram           String
-  driverLicence      String
-  educationForm      String
-  city               String
-  endYear            String
-  professionalSkills String[]
-  socialSkills       String[]
-  additionalSkills   String[]
-  additionalInfo     String
-  workExperience     String
-  educations         String[]
-  courses            String[]
-  awards             String[]
-
-  Works    Works[]
-  Practics Practics[]
+  uuid                 String  @id
+  fullName             String
+  profession           String
+  birthday             String
+  group                String
+  phone                String
+  email                String
+  telegram             String?
+  driverLicence        String?
+  educationForm        String
+  city                 String
+  endYear              String
+  launguages           String
+  professionalSkills   String
+  socialSkills         String
+  additionalSkills     String
+  additionalInfo       String
+  workExperience       String
+  educations           String
+  courses              String
+  awards               String
+  // practice
+  practiceName         String?
+  practiceTime         String?
+  practiceByProfession String?
+  practiceFunctions    String?
+  // work
+  workName             String?
+  workTime             String?
+  workByProfession     String?
+  workFunctions        String?
 }

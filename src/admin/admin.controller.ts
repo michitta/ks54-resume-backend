@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -8,20 +9,31 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AdminService } from "./admin.service";
+import { AuthGuard } from "@nestjs/passport";
 
-@Controller("Admin")
+@Controller("admin")
 export class AdminController {
-  constructor(private readonly AdminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) {}
 
-  @UseGuards()
   @Get("/:fullName")
+  @UseGuards(AuthGuard("jwt"))
   async searchStudent(@Param("fullName") fullName: string, @Req() req: any) {
-    return this.AdminService.searchStudent(fullName);
+    return this.adminService.searchStudent(fullName, req.user.uuid);
   }
 
-  @UseGuards()
   @Post("/:uuid")
-  async setStudent(@Param("uuid") uuid: string, @Body() body: any) {
-    return this.AdminService.setStudent(uuid, body.data);
+  @UseGuards(AuthGuard("jwt"))
+  async setStudent(
+    @Param("uuid") uuid: string,
+    @Body() body: any,
+    @Req() req: any
+  ) {
+    return this.adminService.setStudent(uuid, body.data, req.user.uuid);
+  }
+
+  @Delete("/:uuid")
+  @UseGuards(AuthGuard("jwt"))
+  async deleteStudent(@Param("uuid") uuid: string, @Req() req: any) {
+    return this.adminService.deleteStudent(uuid, req.user.uuid);
   }
 }

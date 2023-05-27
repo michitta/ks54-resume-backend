@@ -22,7 +22,6 @@ export class AuthController {
   async login(@Body() data: login, @Res() res: Response) {
     const answer = await this.authService.login(data);
     res.cookie("token", answer.token);
-    res.cookie("uuid", answer.uuid);
     return res.status(200).send();
   }
 
@@ -39,9 +38,16 @@ export class AuthController {
   }
 
   @Get("recoveryConfirm")
-  @Redirect("http://localhost:3000/auth/login", 301)
+  @Redirect("https://owocon.eu.org/auth/login", 301)
   async recoveryConfirm(@Query("token") data: string) {
     return await this.authService.recoveryConfirm(data);
+  }
+
+  @Post("logout")
+  async logout(@Res() res: Response) {
+    res.clearCookie("token");
+    res.end();
+    return res.status(200).send();
   }
 
   @Get("@me")
