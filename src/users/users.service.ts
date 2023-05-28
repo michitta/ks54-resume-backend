@@ -10,11 +10,15 @@ export class UsersService {
   ) {}
 
   async getStudent(uuid: string) {
-    return this.prisma.students.findFirst({
+    const student = await this.prisma.students.findFirst({
       where: {
         uuid: uuid,
       },
     });
+
+    if (!student) throw new BadRequestException("This student does not exist");
+
+    return student;
   }
 
   async setStudent(uuid: string, data: any) {

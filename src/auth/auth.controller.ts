@@ -29,7 +29,7 @@ export class AuthController {
   async register(@Body() data: register, @Res() res: Response) {
     const answer = await this.authService.register(data);
     res.cookie("token", answer.token);
-    return answer;
+    return res.status(200).send();
   }
 
   @Post("recovery")
