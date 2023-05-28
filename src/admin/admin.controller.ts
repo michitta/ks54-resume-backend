@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -19,9 +20,9 @@ import { FileInterceptor } from "@nestjs/platform-express";
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get(":fullName")
+  @Get("search")
   @UseGuards(AuthGuard("jwt"))
-  async searchStudent(@Param("fullName") fullName: string, @Req() req: any) {
+  async searchStudent(@Query("fullName") fullName: string, @Req() req: any) {
     return this.adminService.searchStudent(fullName, req.user.uuid);
   }
 
