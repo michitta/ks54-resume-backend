@@ -93,7 +93,7 @@ export class AdminService {
     });
     if (!checkPermissions.admin)
       throw new BadRequestException("You are not admin");
-    if (file.mimetype != "image/png")
+    if (file?.mimetype != "image/png")
       throw new BadRequestException("Неверный формат файла. Загрузите .png");
     Promise.all([
       this.s3.putObject({
@@ -102,7 +102,7 @@ export class AdminService {
         ACL: "public-read",
         Body: file.buffer,
       }),
-      this.prisma.users.update({
+      this.prisma.students.update({
         where: { uuid },
         data: {
           lastModified: new Date(),

@@ -49,7 +49,6 @@ export class AdminController {
     @Param("uuid") uuid: string,
     @UploadedFile() file: Express.Multer.File
   ) {
-    console.log(1);
     return this.adminService.setIcon(req.user.uuid, uuid, file);
   }
 }

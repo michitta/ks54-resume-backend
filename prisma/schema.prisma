@@ -8,16 +8,15 @@ datasource db {
 }
 
 model Users {
-  uuid         String   @id @default(uuid())
-  email        String   @unique
-  fullName     String   @unique
-  password     String
-  admin        Boolean  @default(false)
-  lastModified DateTime @default(now())
+  uuid     String  @id @default(uuid())
+  email    String  @unique
+  fullName String  @unique
+  password String
+  admin    Boolean @default(false)
 }
 
 model Students {
-  uuid                 String  @id
+  uuid                 String   @id
   fullName             String
   profession           String
   birthday             String
@@ -48,4 +47,6 @@ model Students {
   workTime             String?
   workByProfession     String?
   workFunctions        String?
+  // special
+  lastModified         DateTime @default(now())
 }
