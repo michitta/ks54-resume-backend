@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "nestjs-prisma";
@@ -140,13 +141,13 @@ export class AuthService {
   }
 
   async getMe(data: string) {
-    if (!data) throw new NotFoundException();
+    if (!data) throw new UnauthorizedException();
     const db = await this.prisma.users.findFirst({
       where: {
         uuid: data,
       },
     });
-    if (!db) throw new NotFoundException("Invalid credentials");
+    if (!db) throw new UnauthorizedException();
     return db;
   }
 }

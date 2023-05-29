@@ -95,6 +95,12 @@ export class AdminService {
       throw new BadRequestException("You are not admin");
     if (file?.mimetype != "image/png")
       throw new BadRequestException("Неверный формат файла. Загрузите .png");
+
+    const lastModified = await this.prisma.students.findUnique({
+      where: { uuid },
+    });
+
+    if (!lastModified) throw new BadRequestException("Сначала создайте резюме");
     Promise.all([
       this.s3.putObject({
         Bucket: "hackaton",
