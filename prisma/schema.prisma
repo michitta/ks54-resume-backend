@@ -13,6 +13,7 @@ model Users {
   fullName String  @unique
   password String
   admin    Boolean @default(false)
+  students Students?
 }
 
 model Students {
@@ -49,4 +50,6 @@ model Students {
   workFunctions        String?
   // special
   lastModified         DateTime @default(now())
+  
+  users   Users? @relation(fields: [uuid, fullName, email], references: [uuid, fullName, email])
 }
