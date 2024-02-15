@@ -49,4 +49,5 @@ model Students {
   workFunctions        String?
   // special
   lastModified         DateTime @default(now())
+  imageHash String?
 }

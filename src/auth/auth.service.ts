@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  ConflictException,
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -91,7 +92,7 @@ export class AuthService {
       where: { email: data.email },
     });
     if (user) {
-      const tokenToRecovery = `https://owocon.eu.org/api/v1/auth/recoveryConfirm?token=${this.jwtService.sign(
+      const tokenToRecovery = `http://localhost:3003/api/v1/auth/recoveryConfirm?token=${this.jwtService.sign(
         {
           sub: {
             uuid: user.uuid,

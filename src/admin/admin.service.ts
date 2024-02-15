@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import { InjectS3, S3 } from "nestjs-s3";
+import { Md5 } from "ts-md5";
 
 @Injectable()
 export class AdminService {
@@ -100,11 +101,14 @@ export class AdminService {
       where: { uuid },
     });
 
+    const hash = Md5.hashStr(file.buffer.toString()) + Date.now();
+
     if (!lastModified) throw new BadRequestException("Сначала создайте резюме");
+    
     Promise.all([
       this.s3.putObject({
-        Bucket: "hackaton",
-        Key: `${uuid}.png`,
+        Bucket: "images",
+        Key: `${hash}.png`,
         ACL: "public-read",
         Body: file.buffer,
       }),
@@ -112,6 +116,7 @@ export class AdminService {
         where: { uuid },
         data: {
           lastModified: new Date(),
+          imageHash: hash
         },
       }),
     ]);

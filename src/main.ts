@@ -13,7 +13,7 @@ async function bootstrap() {
   });
   app.enableCors({
     credentials: true,
-    origin: ["https://owocon.eu.org"],
+    origin: ["http://localhost:3000"],
   });
   await app.listen(3003);
 }

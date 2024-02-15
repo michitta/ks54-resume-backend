@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import { Md5 } from 'ts-md5';
 import { PrismaService } from "nestjs-prisma";
 import { InjectS3, S3 } from "nestjs-s3";
 
@@ -76,16 +77,18 @@ export class UsersService {
     if (file?.mimetype != "image/png")
       throw new BadRequestException("Неверный формат файла. Загрузите .png");
 
-    const lastModified = await this.prisma.students.findUnique({
+    const user = await this.prisma.students.findUnique({
       where: { uuid },
     });
 
-    if (!lastModified) throw new BadRequestException("Сначала создайте резюме");
+    if (!user) throw new BadRequestException("Сначала создайте резюме");
+
+    const hash = Md5.hashStr(file.buffer.toString()) + Date.now();
 
     Promise.all([
       this.s3.putObject({
-        Bucket: "hackaton",
-        Key: `${uuid}.png`,
+        Bucket: "images",
+        Key: `${hash}.png`,
         ACL: "public-read",
         Body: file.buffer,
       }),
@@ -93,6 +96,7 @@ export class UsersService {
         where: { uuid },
         data: {
           lastModified: new Date(),
+          imageHash: hash
         },
       }),
     ]);
