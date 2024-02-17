@@ -29,11 +29,11 @@ import { S3Module } from "nestjs-s3";
     }),
     MailerModule.forRoot({
       transport: {
-        host: "smtp.yandex.ru",
+        host: 'smtp.yandex.ru',
         port: 465,
         secure: true,
         auth: {
-          user: "no-reply@yami.town",
+          user: 'no-reply@yami.town',
           pass: process.env.SMTP_KEY,
         },
       },
