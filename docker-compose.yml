@@ -1,0 +1,58 @@
+services:
+  minio:
+    image: minio:latest
+    restart: always
+    networks:
+      - backend
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio
+      - MINIO_REGION=fl
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=minio
+
+  neko:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    working_dir: /app
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      - minio
+      - db
+    restart: always
+    environment:
+      REDIS_HOST: redis
+      DATABASE_URL: postgres://backend:AndroidR123@db:5432/root?schema=neko
+      MINIO_URL: http://minio:9000
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio
+
+  db:
+    image: postgres:latest
+    restart: always
+    networks:
+      - backend
+    environment:
+      POSTGRES_DB: root
+      POSTGRES_USER: backend
+      POSTGRES_PASSWORD: AndroidR123
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  backend:
+    name: neko
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
