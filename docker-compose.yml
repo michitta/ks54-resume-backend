@@ -1,6 +1,6 @@
 services:
   minio:
-    image: minio:latest
+    image: minio/minio:latest
     restart: always
     networks:
       - backend
