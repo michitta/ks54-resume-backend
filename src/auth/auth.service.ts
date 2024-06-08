@@ -1,8 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  ConflictException,
-  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -92,7 +90,7 @@ export class AuthService {
       where: { email: data.email },
     });
     if (user) {
-      const tokenToRecovery = `http://localhost:3003/api/v1/auth/recoveryConfirm?token=${this.jwtService.sign(
+      const tokenToRecovery = `http://127.0.0.1:3003/api/v1/auth/recoveryConfirm?token=${this.jwtService.sign(
         {
           sub: {
             uuid: user.uuid,

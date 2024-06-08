@@ -21,14 +21,14 @@ export class AuthController {
   @Post("login")
   async login(@Body() data: login, @Res() res: Response) {
     const answer = await this.authService.login(data);
-    res.cookie("token", answer.token);
+    res.cookie("token", answer.token, { sameSite: "none", secure: true });
     return res.status(200).send();
   }
 
   @Post("register")
   async register(@Body() data: register, @Res() res: Response) {
     const answer = await this.authService.register(data);
-    res.cookie("token", answer.token);
+    res.cookie("token", answer.token, { sameSite: "none", secure: true });
     return res.status(200).send();
   }
 
@@ -38,14 +38,14 @@ export class AuthController {
   }
 
   @Get("recoveryConfirm")
-  @Redirect("http://localhost:3003/auth/login", 301)
+  @Redirect("http://127.0.0.1:3003/auth/login", 301)
   async recoveryConfirm(@Query("token") data: string) {
     return this.authService.recoveryConfirm(data);
   }
 
   @Post("logout")
   async logout(@Res() res: Response) {
-    res.clearCookie("token");
+    res.clearCookie("token", { sameSite: "none", secure: true });
     res.end();
     return res.status(200).send();
   }

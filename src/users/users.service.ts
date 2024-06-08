@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Md5 } from 'ts-md5';
+import { Md5 } from "ts-md5";
 import { PrismaService } from "nestjs-prisma";
 import { InjectS3, S3 } from "nestjs-s3";
 
@@ -96,7 +96,7 @@ export class UsersService {
         where: { uuid },
         data: {
           lastModified: new Date(),
-          imageHash: hash
+          imageHash: hash,
         },
       }),
     ]);

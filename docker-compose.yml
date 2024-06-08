@@ -1,59 +1,70 @@
 services:
   minio:
-    image: docker.io/bitnami/minio:latest
+    image: minio/minio
     restart: always
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.20.0.2
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
     environment:
-      - MINIO_ROOT_USER=minio
-      - MINIO_ROOT_PASSWORD=minio
+      - MINIO_ROOT_USER=aslkdanslkdnas
+      - MINIO_ROOT_PASSWORD=klasnflkafbaojsfhdosahd
       - MINIO_REGION=fl
-      - MINIO_ACCESS_KEY=minio
-      - MINIO_SECRET_KEY=minio
+      - MINIO_ACCESS_KEY=aslkdanslkdnas
+      - MINIO_SECRET_KEY=klasnflkafbaojsfhdosahd
+    command: server /data --console-address ":9001"
 
   neko:
     build:
       context: .
       dockerfile: Dockerfile
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.20.0.3
     working_dir: /app
     ports:
-      - '127.0.0.1:3003:3003'
+      - "127.0.0.1:3003:3003"
     depends_on:
       - minio
       - db
     restart: always
     environment:
       REDIS_HOST: redis
-      DATABASE_URL: postgres://backend:asdzcvqadsa@db:5432/root?schema=panel
-      MINIO_URL: http://minio:9000
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio
+      DATABASE_URL: postgres://backend:asdzcvqadsa@db:5432/root?schema=public
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESSKEYID: aslkdanslkdnas
+      S3_SECRETACCESSKEY: klasnflkafbaojsfhdosahd
       JWT_SECRET: adflj13!@#nwejfnsdk!JO#B1fndeokfn!@#dkkfgnsfknern!@#sdlkfns
 
   db:
     image: postgres:latest
     restart: always
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.20.0.4
     environment:
       POSTGRES_DB: root
       POSTGRES_USER: backend
       POSTGRES_PASSWORD: asdzcvqadsa
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
 networks:
   backend:
-    name: neko
+    name: backend
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
 
 volumes:
+  minio-data:
+    driver: local
   postgres_data:
     driver: local
