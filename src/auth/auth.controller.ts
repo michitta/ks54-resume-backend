@@ -38,7 +38,7 @@ export class AuthController {
   }
 
   @Get("recoveryConfirm")
-  @Redirect("http://127.0.0.1:3003/auth/login", 301)
+  @Redirect("http://127.0.0.1:3000/auth/login", 301)
   async recoveryConfirm(@Query("token") data: string) {
     return this.authService.recoveryConfirm(data);
   }

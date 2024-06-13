@@ -13,7 +13,11 @@ async function bootstrap() {
   });
   app.enableCors({
     credentials: true,
-    origin: ["http://127.0.0.1:3000", "http://172.20.0.5:3000"],
+    origin: [
+      "http://127.0.0.1:3000",
+      "http://172.20.0.5:3000",
+      "http://localhost:3000",
+    ],
   });
   await app.listen(3003);
 }
